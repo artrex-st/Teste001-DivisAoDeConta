@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace Teste001_DivisAoDeConta
 {
-    public class Produto
+    public class Produto // Obj 
     {
         public string Nome { get; set; }
         public double Valor { get; set; }
-        public Produto(string nome, string valor)
+        public Produto(string nome, double valor)
         {
             Nome = nome;
-            Valor = Convert.ToDouble(valor);
+            Valor = valor;
         }
         // para testes de print em tela
         public override string ToString()
@@ -31,29 +31,59 @@ namespace Teste001_DivisAoDeConta
 
         static void Main(string[] args)
         {
-            int clientesMesa = 0, itensConsumidos = 0;
             string produtoNomeValor;
             List<Produto> listaProdutos = new List<Produto>(); // lista de objetos do tipo "Produtos"
-            string itensDesconsiderar;
-            double total = 0, parcela = 0, totalDesconsiderados = 0;
+            string itensDesconsiderar, temp;
+            double total = 0, totalDesconsiderados = 0;
 
-
-            Console.WriteLine("Digite quantos clientes tem na mesa:");
             // Clientes na mesa:
-            clientesMesa = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Digite quantos itens foram consumidos:");
+            do
+            {
+
+                Console.WriteLine("Digite quantos clientes tem na mesa:");
+                temp = Console.ReadLine();
+            } while (!NumeroChek(temp,0));
+            int clientesMesa = Convert.ToInt32(temp);
+
             // Total de itens consumidos
-            itensConsumidos = Convert.ToInt32(Console.ReadLine());
+            do
+            {
+                Console.WriteLine("Digite quantos itens foram consumidos:");
+                temp = Console.ReadLine();
+            } while (!NumeroChek(temp));
+            int itensConsumidos = Convert.ToInt32(temp);
 
             // dinamicos (nome + valor do item)
             for (int i = 0; i < itensConsumidos; i++)
             {
                 // primeiro é: ALT + 167 = º
                 Console.WriteLine($"Digite o {i + 1}º item e seu valor:");
-                produtoNomeValor = Console.ReadLine();
+                do
+                {
+                    produtoNomeValor = Console.ReadLine();
+
+                } while (!SpaceChek(produtoNomeValor));
+                
                 string[] produtoSplit = produtoNomeValor.Split(' ');
-                listaProdutos.Add(new Produto(produtoSplit[0], produtoSplit[1]));
-                total += listaProdutos[i].Valor; // total
+                if (produtoSplit.Length>1)
+                {
+                    if (NumeroChek(produtoSplit[1]))
+                    {
+                        produtoSplit[1] = produtoSplit[1].Replace(".",","); // converter pontuação
+                        listaProdutos.Add(new Produto(produtoSplit[0], Convert.ToDouble(produtoSplit[1])));
+                        total += listaProdutos[i].Valor; // total
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Nome ou valor invalido para o {i + 1}º item, digite o nome e o valor separados apenas por 1 unico espaço:");
+                        i--;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"É necessario algum valor para o {i + 1}º item, digite o valor separados apenas por 1 unico espaço:");
+                    i--;
+                }
 
             }
             // exclusão da divisao:
@@ -74,7 +104,7 @@ namespace Teste001_DivisAoDeConta
                 Console.WriteLine(itens[i]);
             }
             //
-            parcela = (total - totalDesconsiderados) / clientesMesa;
+            double parcela = (total - totalDesconsiderados) / clientesMesa;
             //
             // condição de divisão
             //
@@ -95,7 +125,51 @@ namespace Teste001_DivisAoDeConta
             foreach (var item in listaProdutos/*.OrderBy(person => person.Age)*/) Console.WriteLine(item); // print de lista de objeto (precisa de return para funcionar)
 
         }
-
+        private static Boolean SpaceChek(string produtos)
+        {
+            int Primeiro = produtos.IndexOf(' ');
+            int Ultimo = produtos.LastIndexOf(' ');
+            if (Primeiro == Ultimo)
+            {
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"Digite o nome do Produto sem espaços e o valor após 1 o espaço.");
+                return false;
+            }
+        }
+        private static Boolean NumeroChek(string numero)
+        {
+            double x = 0;
+            if (double.TryParse(numero, out x))
+            {
+                return true;
+            }
+            else
+            {
+                Console.WriteLine($"Digite apenas Numeros.");
+                return false;
+            }
+        }
+        private static Boolean NumeroChek(string numero, int zero)
+        {
+            double x = 0;
+            if (double.TryParse(numero, out x))
+            {
+                if (Convert.ToDouble(numero) <= zero)
+                {
+                    Console.WriteLine($"Digite apenas Numeros (numeros menores que '1' não são permitidos).");
+                    return false;
+                }else
+                    return true;
+            }
+            else
+            {
+                Console.WriteLine($"Digite apenas Numeros.");
+                return false;
+            }
+        }
 
         /*
          * vai inserir 2 linhas int
